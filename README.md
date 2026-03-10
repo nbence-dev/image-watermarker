@@ -1,233 +1,95 @@
-# 🖼️ Watermarking Desktop Application
+# Image Watermarker
 
-A professional Python desktop application for adding watermarks to images with a user-friendly GUI built using Tkinter and PIL (Pillow).
+A Python desktop application for adding semi-transparent watermarks to PNG images. Built with Tkinter for the GUI and Pillow for image processing.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Technical Details](#technical-details)
 - [Project Structure](#project-structure)
-- [Requirements](#requirements)
-- [Contributing](#contributing)
-- [License](#license)
+- [Customization](#customization)
 
-## ✨ Features
+## Features
 
-- **User-Friendly GUI**: Clean and intuitive desktop interface built with Tkinter
-- **Image Loading**: Browse and select PNG images from your computer
-- **Live Preview**: View your original and watermarked images in real-time
-- **Professional Watermarking**: Adds both text and pattern watermarks with transparency
-- **Cross-Platform**: Works on Windows, macOS, and Linux
-- **Smart Centering**: Automatically centers the application window on screen
-- **One-Click Save**: Save watermarked images with automatic file naming
-- **Auto-Open**: Automatically opens the saved watermarked image after saving
-- **Responsive Design**: Image preview automatically resizes to fit the interface
+- Load a PNG image via a file browser dialog
+- Live preview of the image (original and watermarked) in the app window
+- Watermark consisting of a semi-transparent diagonal line pattern and centered text overlay
+- Save the watermarked copy to the same folder as the original (`watermarked_<filename>.png`)
+- Automatically opens the saved file after saving
+- Window auto-centers on launch across all supported platforms
 
-## 🚀 Installation
+## Requirements
 
-### Prerequisites
+- Python 3.6+
+- [Pillow](https://python-pillow.org/) — `pip install pillow`
+- Tkinter (bundled with standard Python)
+- Arial font available on the system
 
-- Python 3.6 or higher
-- pip (Python package installer)
-
-### Quick Setup
-
-1. **Clone or download the repository**
-
-   ```bash
-   git clone https://github.com/nbence-dev/watermarking_tkinter_python.git
-   cd watermarking_tkinter_python
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the application**
-   ```bash
-   python main.py
-   ```
-
-### Alternative Installation
-
-If you prefer to install dependencies manually:
+## Installation
 
 ```bash
-pip install pillow
+git clone https://github.com/nbence-dev/image-watermarker.git
+cd image-watermarker
+pip install -r requirements.txt
+python main.py
 ```
 
-## 🎯 Usage
+## Usage
 
-### Step-by-Step Guide
+1. Click **Add Image** to select a PNG file.
+2. Click **Add Watermark** to apply the watermark and preview the result.
+3. Click **Save New Image** to write the file — it opens automatically after saving.
+4. Click **Close Application** to exit.
 
-1. **Launch the Application**
+Input and output are both PNG (RGBA). The saved file is placed alongside the original with a `watermarked_` prefix.
 
-   - Run `python main.py` from the project directory
-   - The application window will open and center on your screen
+## Technical Details
 
-2. **Load an Image**
+### Watermark composition
 
-   - Click the "Add Image" button
-   - Browse to your desired PNG image file
-   - Select and open the image
-   - The image will appear in the preview area
+The watermark is applied using an RGBA overlay composited onto the original image with `Image.alpha_composite`:
 
-3. **Add Watermark**
+- **Pattern**: diagonal lines drawn every 50px across the full image at low opacity (`alpha=30`)
+- **Text**: "Watermark" centered using `textbbox` measurements, rendered at `alpha=80` with Arial 80pt
+- **Resampling**: LANCZOS filter used for all preview resizes
 
-   - Click the "Add Watermark" button (enabled after loading an image)
-   - The watermark will be applied with:
-     - Diagonal line pattern overlay
-     - "Watermark" text in the center
-     - Semi-transparent effects for professional appearance
+### Cross-platform file opening
 
-4. **Save Your Image**
+| OS      | Method                              |
+| ------- | ----------------------------------- |
+| Windows | `os.startfile()`                    |
+| macOS   | `subprocess.run(["open", ...])`     |
+| Linux   | `subprocess.run(["xdg-open", ...])` |
 
-   - Click "Save New Image" (enabled after adding watermark)
-   - The watermarked image is automatically saved in the same folder as the original
-   - Filename format: `watermarked_[original_filename].png`
-   - The saved image opens automatically
+### GUI layout
 
-5. **Close Application**
-   - Click "Close Application" to exit
+Built with Tkinter's grid layout manager. The image preview frame is fixed at 400×300px (`pack_propagate(False)`). The main window is 445×500px and centered on startup using `winfo_screenwidth` / `winfo_screenheight`.
 
-### Supported Formats
-
-- **Input**: PNG files only
-- **Output**: PNG format with transparency support
-
-## 🔧 Technical Details
-
-### Watermark Features
-
-- **Pattern Overlay**: Diagonal lines across the entire image
-- **Text Watermark**: Centered "Watermark" text
-- **Transparency**: Configurable opacity levels
-- **Color**: White with alpha transparency
-- **Font**: Arial, 80pt size for text
-- **Quality**: High-quality resampling using LANCZOS filter
-
-### Cross-Platform File Operations
-
-The application includes smart file opening that works across different operating systems:
-
-- **Windows**: Uses `os.startfile()`
-- **macOS**: Uses `subprocess.run(["open", filepath])`
-- **Linux**: Uses `subprocess.run(["xdg-open", filepath])`
-
-### GUI Architecture
-
-- **Framework**: Tkinter (Python's standard GUI library)
-- **Layout**: Grid-based layout system
-- **Responsive**: Dynamic window centering and image resizing
-- **Icon**: Custom application icon (`watermark.ico`)
-- **Dimensions**: 445x500 pixels main window
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-Watermarking_App/
-├── main.py              # Main application file
-├── requirements.txt     # Python dependencies
-├── watermark.ico       # Application icon
-├── README.md           # Project documentation
-├── .gitignore          # Git ignore rules
-└── [watermarked images] # Output folder for processed images
+image-watermarker/
+├── main.py           # Application entry point — GUI and watermarking logic
+├── requirements.txt  # Pillow dependency
+├── watermark.ico     # Window icon
+└── README.md
 ```
 
-### Key Files
+## Customization
 
-- **`main.py`**: Core application with GUI and watermarking logic
-- **`requirements.txt`**: Lists all required Python packages
-- **`watermark.ico`**: Custom icon for the application window
-- **`.gitignore`**: Excludes temporary files and processed images from version control
+**Change watermark text**
 
-## 📦 Requirements
-
-### Python Packages
-
-- **Pillow (PIL)**: Image processing and manipulation
-- **tkinter**: GUI framework (included with Python)
-- **os**: File system operations (built-in)
-- **platform**: Cross-platform compatibility (built-in)
-- **subprocess**: External process execution (built-in)
-
-### System Requirements
-
-- **Operating System**: Windows, macOS, or Linux
-- **Python**: Version 3.6 or higher
-- **Memory**: Minimum 256MB RAM
-- **Storage**: 50MB free space for installation
-
-## 🎨 Customization
-
-### Modifying Watermark Text
-
-To change the watermark text, edit line in the `add_watermark()` function:
+In `add_watermark()`:
 
 ```python
-draw.text(position, "Your Custom Text", fill=watermark_color_text, font=font)
+draw.text(position, "Your Text Here", fill=watermark_color_text, font=font)
 ```
 
-### Adjusting Transparency
-
-Modify the alpha values in the watermark colors:
+**Adjust transparency**
 
 ```python
-watermark_color_pattern = (255, 255, 255, 30)  # Pattern transparency
-watermark_color_text = (255, 255, 255, 80)     # Text transparency
+watermark_color_pattern = (255, 255, 255, 30)  # lower alpha = more transparent
+watermark_color_text    = (255, 255, 255, 80)
 ```
-
-### Changing Supported File Types
-
-Update the file dialog filter in the `openFile()` function:
-
-```python
-filetypes=[("PNG Files", "*.png"), ("JPEG Files", "*.jpg"), ("All Images", "*.png;*.jpg")]
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🐛 Known Issues
-
-- Currently supports PNG files only
-- Watermark text is hardcoded (can be customized in code)
-- Font path assumes Arial is available on the system
-
-## 🔮 Future Enhancements
-
-- [ ] Support for JPEG, GIF, and other image formats
-- [ ] Customizable watermark text input
-- [ ] Multiple watermark positioning options
-- [ ] Batch processing capabilities
-- [ ] Watermark opacity slider
-- [ ] Custom font selection
-- [ ] Image rotation and scaling options
-
-## 👨‍💻 Author
-
-**Nicholas** - [nbence-dev](https://github.com/nbence-dev)
-
-## 🙏 Acknowledgments
-
-- Python Software Foundation for the amazing Python language
-- Pillow team for the excellent image processing library
-- Tkinter developers for the GUI framework
-
----
-
-_Built with ❤️ using Python and Tkinter_
