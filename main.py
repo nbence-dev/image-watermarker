@@ -7,6 +7,23 @@ import subprocess
 import time
 
 
+def _load_font(size):
+    candidates = [
+        "arial.ttf",                                                        # Windows (CWD / system PATH)
+        "C:/Windows/Fonts/arial.ttf",                                       # Windows absolute
+        "/Library/Fonts/Arial.ttf",                                         # macOS
+        "/System/Library/Fonts/Supplemental/Arial.ttf",                     # macOS (newer)
+        "/usr/share/fonts/truetype/msttcorefonts/Arial.ttf",                # Linux (ms-fonts)
+        "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",           # Linux fallback
+    ]
+    for path in candidates:
+        try:
+            return ImageFont.truetype(path, size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
 def center_window(window, width=500, height=500):
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -88,7 +105,7 @@ def add_watermark():
         draw.line([(0, height - i), (i, height)], fill=watermark_color_pattern, width=5)
 
     font_size = 80
-    font = ImageFont.truetype("arial.ttf", font_size)
+    font = _load_font(font_size)
 
     bbox = draw.textbbox((0, 0), "Nicholas", font=font)
     text_width = bbox[2] - bbox[0]
